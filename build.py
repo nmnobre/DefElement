@@ -1113,8 +1113,29 @@ def linked_names(dim: str, fname: str, cell: str) -> str:
     return ", ".join(out)
 
 
+def build_de_rham(de_rham: typing.List[str], diff_form_deg: typing.List[str]) -> None:
+    """Append row to HTML table of FE function spaces.
+
+    Args:
+        de_rham: HTML table of FE function spaces
+        diff_form_deg: List of differential form degrees
+    """
+    if all(i in family[cell] for i in diff_form_deg):
+        row = "<tr>"
+        row += f"<td>{linked_names(str(len(diff_form_deg)), fname, cell)}</td>"
+        for o in diff_form_deg:
+            row += f"<td><a href='/elements/{family[cell][o][1]}'"
+            row += " style='text-decoration:none'>"
+            row += f"{family[cell][o][0]}</a></td>"
+            if o != "d":
+                row += "<td>&nbsp;</td>"
+        row += "</tr>"
+        de_rham.append(row)
+
+
 de_rham_3d = []
 de_rham_2d = []
+de_rham_2D = []
 
 for fname, data in categoriser.families["de-rham"].items():
     family = data["elements"]
@@ -1143,28 +1164,9 @@ for fname, data in categoriser.families["de-rham"].items():
                     sub_content += " or ".join(sub_names)
                     sub_content += f" ({family[cell][o][0]})</a></li>"
 
-            if all(o in family[cell] for o in ["0", "1", "d-1", "d"]):
-                row3d = "<tr>"
-                row3d += f"<td>{linked_names('3', fname, cell)}</td>"
-                for o in ["0", "1", "d-1", "d"]:
-                    row3d += f"<td><a href='/elements/{family[cell][o][1]}'"
-                    row3d += " style='text-decoration:none'>"
-                    row3d += f"{family[cell][o][0]}</a></td>"
-                    if o != "d":
-                        row3d += "<td>&nbsp;</td>"
-                row3d += "</tr>"
-                de_rham_3d.append(row3d)
-            if all(i in family[cell] for i in ["0", "d-1", "d"]):
-                row2d = "<tr>"
-                row2d += f"<td>{linked_names('2', fname, cell)}</td>"
-                for o in ["0", "d-1", "d"]:
-                    row2d += f"<td><a href='/elements/{family[cell][o][1]}'"
-                    row2d += " style='text-decoration:none'>"
-                    row2d += f"{family[cell][o][0]}</a></td>"
-                    if o != "d":
-                        row2d += "<td>&nbsp;</td>"
-                row2d += "</tr>"
-                de_rham_2d.append(row2d)
+            build_de_rham(de_rham_3d, ["0", "1", "d-1", "d"])
+            build_de_rham(de_rham_2d, ["0", "d-1", "d"])
+            build_de_rham(de_rham_2D, ["0", "1", "d"])
         sub_content += "</ul>"
 
     write_html_page(os.path.join(settings.htmlfamilies_path, f"{fname}.html"),
@@ -1198,6 +1200,17 @@ content += "<td>\\(\\xrightarrow{\\nabla\\cdot}\\)</td>"
 content += "<td>\\(L_2\\)</td>"
 content += "</tr>\n"
 content += "\n".join(de_rham_2d)
+content += "</table>"
+content += "<table class='families'>\n"
+content += "<tr>"
+content += "<td><small>Name(s)</small></td>"
+content += "<td>\\(H^1\\)</td>"
+content += "<td>\\(\\xrightarrow{\\nabla}\\)</td>"
+content += "<td>\\(\\textbf{H}(\\text{curl})\\)</td>"
+content += "<td>\\(\\xrightarrow{\\text{curl}}\\)</td>"
+content += "<td>\\(L_2\\)</td>"
+content += "</tr>\n"
+content += "\n".join(de_rham_2D)
 content += "</table>"
 write_html_page(os.path.join(settings.htmlfamilies_path, "index.html"), "Complex families", content)
 
