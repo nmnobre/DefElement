@@ -1,10 +1,11 @@
 --
 authors:
   - Scroggs, Matthew W.
+  - Nobre, Nuno
 --
 
 # De Rham element families
-The following relationship is the de Rham complex:
+The following relationship is the de Rham complex in 3D:
 $$
 H^1
 \xrightarrow{\nabla}
@@ -14,6 +15,9 @@ H^1
 \xrightarrow{\nabla\cdot}
 L^2
 $$
+We say this sequence is exact since the range (or image) of each of the
+differential operators coincides with the null space (or kernel) of the next
+operator in the sequence. We also note the last map is a surjection.
 
 A set of four finite elements \(\mathcal{V}_0\) to \(\mathcal{V}_3\) forms 
 a discrete de Rham complex if the following commutative diagram holds,
@@ -41,6 +45,10 @@ H^1
 &\mathcal{V}_3
 \end{array}
 $$
+Sequences of discrete finite element spaces are, in general, not exact.
+However, it is always still the case that the range of each of the differential
+operators is contained in (but not coincident with) the null space of the next
+operator in the sequence. To see this,
 
 You can view families of elements that form discrete de Rham complexes on the [families page](index::families).
 On DefElement, two naming conventions for elements in a de Rham complex are used.
